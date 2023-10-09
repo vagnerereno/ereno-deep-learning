@@ -33,7 +33,7 @@ def load_data():
     y_test = test_df['@class@']
     return X_train, y_train, X_test, y_test
 
-def tratar_dados(X_train, y_train, X_test, y_test):
+def preprocess_data(X_train, y_train, X_test, y_test):
 
     # Tratar valores faltantes
     for col in X_train.select_dtypes(include=[np.number]).columns.tolist():
