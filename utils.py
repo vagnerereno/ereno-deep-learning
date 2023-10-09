@@ -3,7 +3,6 @@ import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
 
-
 def load_data():
     # Carregamento de dados
     train_df = pd.read_csv('data/train.csv', sep=',')

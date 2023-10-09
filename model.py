@@ -1,6 +1,3 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
 from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.callbacks import Callback
 from tensorflow.python.keras.layers import Dense
