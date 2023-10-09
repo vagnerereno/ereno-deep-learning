@@ -1,6 +1,6 @@
-from tensorflow.python.keras import Sequential
-from tensorflow.python.keras.callbacks import Callback
-from tensorflow.python.keras.layers import Dense
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.callbacks import Callback
 
 class BatchLogger(Callback):
     def on_train_begin(self, logs={}):
