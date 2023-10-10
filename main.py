@@ -4,6 +4,7 @@ import numpy as np
 
 import model
 import utils
+from metrics import Metrics
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
@@ -34,9 +35,13 @@ if __name__ == '__main__':
     utils.print_metrics(metrics)
     metrics_names = ['Accuracy', 'Precision', 'Recall', 'F1-Score']
     class_names = np.unique(y_train)  # Aqui assumimos que y_train já foi transformado em labels numéricas
+
+    num_classes = len(class_names)
+    metrics = Metrics(num_classes)
+
     for i, class_name in enumerate(class_names):
-        metrics_values = [metrics['accuracy'][i], metrics['precision'][i], metrics['recall'][i], metrics['f1'][i]]
-        utils.plot_metrics_for_class(str(class_name), metrics_values, metrics_names)  # Passando metrics_names como um argumento
+        metrics_values = metrics.get_values_for_class(i)
+        utils.plot_metrics_for_class(str(class_name), metrics_values, metrics_names)
 
     combined_metrics = [metrics['accuracy'], metrics['precision'], metrics['recall'], metrics['f1']]
     utils.plot_combined_metrics(combined_metrics, [str(class_name) for class_name in class_names],
