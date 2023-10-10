@@ -82,32 +82,31 @@ def preprocess_data(X_train, y_train, X_test, y_test):
 
     return y_train, y_test, X_train, X_test
 
-def calculate_metrics(y_test, y_pred):
-    metrics = Metrics()
+def calculate_metrics(y_test, y_pred, metrics_obj):
 
-    metrics.accuracy = accuracy_score(y_test, y_pred)
-    metrics.precision = precision_score(y_test, y_pred, average='weighted') # Para problemas multiclass, adicionar o argumento average
-    metrics.recall = recall_score(y_test, y_pred, average='weighted') # Para problemas multiclass, adicionar o argumento average
-    metrics.f1 = f1_score(y_test, y_pred, average='weighted') # Para problemas multiclass, adicionar o argumento average
+    metrics_obj.accuracy = accuracy_score(y_test, y_pred)
+    metrics_obj.precision = precision_score(y_test, y_pred, average='weighted') # Para problemas multiclass, adicionar o argumento average
+    metrics_obj.recall = recall_score(y_test, y_pred, average='weighted') # Para problemas multiclass, adicionar o argumento average
+    metrics_obj.f1 = f1_score(y_test, y_pred, average='weighted') # Para problemas multiclass, adicionar o argumento average
 
     # AUC-ROC não é diretamente aplicável para classificação multiclasse no scikit-learn
     # Para multiclasse, geralmente se calcula um AUC por classe (one-vs-all) e depois se faz a média
     # metrics.auc_roc = roc_auc_score(y_test, y_pred)
 
-    metrics.conf_matrix = confusion_matrix(y_test, y_pred)
-    metrics.TP = np.diag(metrics.conf_matrix)
-    metrics.FP = np.sum(metrics.conf_matrix, axis=0) - metrics.TP
-    metrics.FN = np.sum(metrics.conf_matrix, axis=1) - metrics.TP
-    metrics.TN = np.sum(metrics.conf_matrix) - (metrics.FP + metrics.FN + metrics.TP)
+    metrics_obj.conf_matrix = confusion_matrix(y_test, y_pred)
+    metrics_obj.TP = np.diag(metrics_obj.conf_matrix)
+    metrics_obj.FP = np.sum(metrics_obj.conf_matrix, axis=0) - metrics_obj.TP
+    metrics_obj.FN = np.sum(metrics_obj.conf_matrix, axis=1) - metrics_obj.TP
+    metrics_obj.TN = np.sum(metrics_obj.conf_matrix) - (metrics_obj.FP + metrics_obj.FN + metrics_obj.TP)
 
-    metrics.calculated_accuracy = (metrics.TP + metrics.TN) / (metrics.TP + metrics.FP + metrics.FN + metrics.TN)
-    metrics.calculated_precision = metrics.TP / (metrics.TP + metrics.FP)
-    metrics.calculated_recall = metrics.TP / (metrics.TP + metrics.FN)
-    metrics.calculated_specificity = metrics.TN / (metrics.TN + metrics.FP)
-    metrics.calculated_f1 = 2 * (metrics.calculated_precision * metrics.calculated_recall) / (
-                metrics.calculated_precision + metrics.calculated_recall)
+    metrics_obj.calculated_accuracy = (metrics_obj.TP + metrics_obj.TN) / (metrics_obj.TP + metrics_obj.FP + metrics_obj.FN + metrics_obj.TN)
+    metrics_obj.calculated_precision = metrics_obj.TP / (metrics_obj.TP + metrics_obj.FP)
+    metrics_obj.calculated_recall = metrics_obj.TP / (metrics_obj.TP + metrics_obj.FN)
+    metrics_obj.calculated_specificity = metrics_obj.TN / (metrics_obj.TN + metrics_obj.FP)
+    metrics_obj.calculated_f1 = 2 * (metrics_obj.calculated_precision * metrics_obj.calculated_recall) / (
+                metrics_obj.calculated_precision + metrics_obj.calculated_recall)
 
-    return metrics
+    return metrics_obj
 
 def print_metrics(metrics):
     print(f'Accuracy: {metrics.accuracy}')

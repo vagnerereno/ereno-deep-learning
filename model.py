@@ -53,7 +53,7 @@ def model(X_train, y_train, X_test):
     print(model.summary())
 
     # Treinamento do modelo
-    history = model.fit(X_train, y_train, epochs=1, batch_size=128, callbacks=[batch_logger])
+    history = model.fit(X_train, y_train, epochs=1, batch_size=256, callbacks=[batch_logger])
 
     # Fazer previsões
     y_pred_probs = model.predict(X_test)

@@ -30,14 +30,15 @@ if __name__ == '__main__':
     unique_test, counts_test = np.unique(y_test, return_counts=True)
     print("Classes distribution in training dataset after preprocess:\n", dict(zip(unique_test, counts_test)))
 
+    class_names = np.unique(y_train)
+    num_classes = len(class_names)
+    metrics = utils.Metrics(num_classes)
+
     _, y_pred = model.model(X_train, y_train, X_test) # Para ver o histórico, armazenar a variável history.
-    metrics = utils.calculate_metrics(y_test, y_pred)
+    metrics = utils.calculate_metrics(y_test, y_pred, metrics)
     utils.print_metrics(metrics)
     metrics_names = ['Accuracy', 'Precision', 'Recall', 'F1-Score']
-    class_names = np.unique(y_train)  # Aqui assumimos que y_train já foi transformado em labels numéricas
 
-    num_classes = len(class_names)
-    metrics = Metrics(num_classes)
 
     for i, class_name in enumerate(class_names):
         metrics_values = metrics.get_values_for_class(i)
