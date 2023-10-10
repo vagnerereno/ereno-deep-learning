@@ -102,10 +102,6 @@ def calculate_metrics(y_test, y_pred, metrics_obj):
     return metrics_obj
 
 def print_metrics(metrics):
-    print(f'Accuracy: {metrics.accuracy}')
-    print(f'Precision: {metrics.precision}')
-    print(f'Recall: {metrics.recall}')
-    print(f'F1 Score: {metrics.f1}')
     print(f'Confusion Matrix: \n{metrics.conf_matrix}')
     print(f'True Positives: {metrics.TP}')
     print(f'False Positives: {metrics.FP}')
