@@ -1,9 +1,13 @@
+import json
+import os
+
 import numpy as np
 import pandas as pd
+from matplotlib import pyplot as plt
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
 from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score)
-
+import seaborn as sns
 from metrics import Metrics
 
 
@@ -120,3 +124,45 @@ def print_metrics(metrics):
     print(f'Recall (calculated): {metrics.calculated_recall}')
     print(f'Specificity (calculated): {metrics.calculated_specificity}')
     print(f'F1 Score (calculated): {metrics.calculated_f1}')
+
+def save_metrics_to_json(metrics, filename="metrics.json"):
+    with open(filename, 'w') as file:
+        json.dump(metrics, file)
+
+
+# Função para adicionar hachuras e anotações
+def add_hatches_and_annotations(ax, values):
+    for bar, value in zip(ax.patches, values):
+        bar.set_edgecolor('black')
+        ax.text(
+            bar.get_x() + bar.get_width() / 2.,
+            bar.get_height() - 0.05,
+            f'{value:.2f}',
+            ha="center",
+            fontsize=12,
+            color='black',
+            bbox=dict(facecolor='white', edgecolor='none', boxstyle='round4')
+        )
+
+def plot_metrics_for_class(class_name, metrics_values, metrics_names, save_path="graphics"):
+    plt.figure(figsize=(7, 4.5))
+    ax = plt.gca()
+    sns.barplot(x=metrics_names, y=metrics_values, color='white', edgecolor='black', ax=ax)
+    ax.set_title(f'Metrics for the {class_name} class', fontsize=16)
+    add_hatches_and_annotations(ax, metrics_values)
+
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    plt.savefig(os.path.join(save_path, f"metrics_for_{class_name}.png"))
+
+def plot_combined_metrics(calculated_metrics, class_names, metrics_names, save_path="graphics"):
+    plt.figure(figsize=(14, 4.5))
+    for idx, metric_name in enumerate(metrics_names):
+        ax = plt.subplot(1, 4, idx + 1)
+        sns.barplot(x=class_names, y=calculated_metrics[idx], color='white', edgecolor='black', ax=ax)
+        ax.set_title(metric_name, fontsize=16)
+        add_hatches_and_annotations(ax, calculated_metrics[idx])
+
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
+    plt.savefig(os.path.join(save_path, "combined_metrics.png"))
