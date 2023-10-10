@@ -83,16 +83,6 @@ def preprocess_data(X_train, y_train, X_test, y_test):
     return y_train, y_test, X_train, X_test
 
 def calculate_metrics(y_test, y_pred, metrics_obj):
-
-    metrics_obj.accuracy = accuracy_score(y_test, y_pred)
-    metrics_obj.precision = precision_score(y_test, y_pred, average='weighted') # Para problemas multiclass, adicionar o argumento average
-    metrics_obj.recall = recall_score(y_test, y_pred, average='weighted') # Para problemas multiclass, adicionar o argumento average
-    metrics_obj.f1 = f1_score(y_test, y_pred, average='weighted') # Para problemas multiclass, adicionar o argumento average
-
-    # AUC-ROC não é diretamente aplicável para classificação multiclasse no scikit-learn
-    # Para multiclasse, geralmente se calcula um AUC por classe (one-vs-all) e depois se faz a média
-    # metrics.auc_roc = roc_auc_score(y_test, y_pred)
-
     metrics_obj.conf_matrix = confusion_matrix(y_test, y_pred)
     metrics_obj.TP = np.diag(metrics_obj.conf_matrix)
     metrics_obj.FP = np.sum(metrics_obj.conf_matrix, axis=0) - metrics_obj.TP
@@ -106,6 +96,9 @@ def calculate_metrics(y_test, y_pred, metrics_obj):
     metrics_obj.calculated_f1 = 2 * (metrics_obj.calculated_precision * metrics_obj.calculated_recall) / (
                 metrics_obj.calculated_precision + metrics_obj.calculated_recall)
 
+    # metrics.auc_roc = roc_auc_score(y_test, y_pred)
+    # AUC-ROC não é diretamente aplicável para classificação multiclasse no scikit-learn
+    # Para multiclasse, geralmente se calcula um AUC por classe (one-vs-all) e depois se faz a média
     return metrics_obj
 
 def print_metrics(metrics):

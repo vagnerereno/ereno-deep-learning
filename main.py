@@ -32,19 +32,18 @@ if __name__ == '__main__':
 
     class_names = np.unique(y_train)
     num_classes = len(class_names)
-    metrics = utils.Metrics(num_classes)
+    metrics = Metrics(num_classes)
 
     _, y_pred = model.model(X_train, y_train, X_test) # Para ver o histórico, armazenar a variável history.
     metrics = utils.calculate_metrics(y_test, y_pred, metrics)
     utils.print_metrics(metrics)
+
     metrics_names = ['Accuracy', 'Precision', 'Recall', 'F1-Score']
 
-
     for i, class_name in enumerate(class_names):
-        metrics_values = metrics.get_values_for_class(i)
+        metrics_values = [metrics.calculated_accuracy[i], metrics.calculated_precision[i], metrics.calculated_recall[i], metrics.calculated_f1[i]]
         utils.plot_metrics_for_class(str(class_name), metrics_values, metrics_names)
 
-    combined_metrics = [metrics['accuracy'], metrics['precision'], metrics['recall'], metrics['f1']]
-    utils.plot_combined_metrics(combined_metrics, [str(class_name) for class_name in class_names],
-                                metrics_names)  # Passando metrics_names como um argumento
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    combined_metrics = [metrics.calculated_accuracy, metrics.calculated_precision, metrics.calculated_recall, metrics.calculated_f1]
+    utils.plot_combined_metrics(combined_metrics, [str(class_name) for class_name in class_names], metrics_names)
+
