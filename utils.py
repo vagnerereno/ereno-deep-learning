@@ -80,7 +80,7 @@ def preprocess_data(X_train, y_train, X_test, y_test):
     if y_test.dtype == 'object':
         y_test = le.transform(y_test)
 
-    return y_train, y_test, X_train, X_test
+    return y_train, y_test, X_train, X_test, le
 
 def calculate_metrics(y_test, y_pred, metrics_obj):
     metrics_obj.conf_matrix = confusion_matrix(y_test, y_pred)
@@ -119,8 +119,11 @@ def save_metrics_to_json(metrics, filename="metrics.json"):
 
 
 # Função para adicionar hachuras e anotações
+hatches = ['/', '\\', '|', '-', '+', 'x', 'o', 'O', '.', '*']  # Adicione ou remova conforme a necessidade
+
 def add_hatches_and_annotations(ax, values):
-    for bar, value in zip(ax.patches, values):
+    for bar, hatch, value in zip(ax.patches, hatches, values):
+        bar.set_hatch(3 * hatch)  # Multiplicação para efeito de hachura mais "grosso"
         bar.set_edgecolor('black')
         ax.text(
             bar.get_x() + bar.get_width() / 2.,

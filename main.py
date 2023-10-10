@@ -19,7 +19,7 @@ if __name__ == '__main__':
     print("Classes distribution in training dataset:\n", y_train.value_counts())
     print("Classes distribution in testing dataset:\n", y_test.value_counts())
 
-    y_train, y_test, X_train, X_test = utils.preprocess_data(X_train, y_train, X_test, y_test)
+    y_train, y_test, X_train, X_test, le = utils.preprocess_data(X_train, y_train, X_test, y_test)
     print("Unique classes in y_train:", np.unique(y_train))
 
     print("X_train Shape after preprocess:", X_train.shape)
@@ -33,6 +33,7 @@ if __name__ == '__main__':
     class_names = np.unique(y_train)
     num_classes = len(class_names)
     metrics = Metrics(num_classes)
+    original_class_names = le.inverse_transform(class_names)
 
     _, y_pred = model.model(X_train, y_train, X_test) # Para ver o histórico, armazenar a variável history.
     metrics = utils.calculate_metrics(y_test, y_pred, metrics)
@@ -40,10 +41,10 @@ if __name__ == '__main__':
 
     metrics_names = ['Accuracy', 'Precision', 'Recall', 'F1-Score']
 
-    for i, class_name in enumerate(class_names):
+    for i, class_name in enumerate(original_class_names):
         metrics_values = [metrics.calculated_accuracy[i], metrics.calculated_precision[i], metrics.calculated_recall[i], metrics.calculated_f1[i]]
         utils.plot_metrics_for_class(str(class_name), metrics_values, metrics_names)
 
     combined_metrics = [metrics.calculated_accuracy, metrics.calculated_precision, metrics.calculated_recall, metrics.calculated_f1]
-    utils.plot_combined_metrics(combined_metrics, [str(class_name) for class_name in class_names], metrics_names)
+    utils.plot_combined_metrics(combined_metrics, [str(class_name) for class_name in original_class_names], metrics_names)
 
