@@ -155,10 +155,11 @@ def plot_combined_metrics(calculated_metrics, class_names, metrics_names, save_p
     for idx, metric_name in enumerate(metrics_names):
         ax = plt.subplot(1, 4, idx + 1)
         values_for_metric = calculated_metrics[idx]
-        print('aq', len(class_names), len(values_for_metric))
-        sns.barplot(x=class_names, y=values_for_metric, color='white', edgecolor='black', ax=ax)
+        sns.barplot(x=class_names, y=values_for_metric, dodge=True, color='white', edgecolor='black', ax=ax)
         ax.set_title(metric_name, fontsize=16)
         add_hatches_and_annotations(ax, values_for_metric)
+        ax.set_xticks(range(len(class_names)))
+        ax.set_xticklabels(class_names, rotation=45, ha="right")
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)
