@@ -48,3 +48,6 @@ if __name__ == '__main__':
     combined_metrics = [metrics.calculated_accuracy, metrics.calculated_precision, metrics.calculated_recall, metrics.calculated_f1]
     utils.plot_combined_metrics(combined_metrics, [str(class_name) for class_name in original_class_names], metrics_names)
 
+    print('ou aq', len(metrics.calculated_accuracy), len(metrics.calculated_precision), len(metrics.calculated_recall), len(metrics.calculated_f1))
+    print('ou entao aq', len(original_class_names))
+

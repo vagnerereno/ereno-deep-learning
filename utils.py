@@ -120,11 +120,11 @@ def save_metrics_to_json(metrics, filename="metrics.json"):
 
 
 # Função para adicionar hachuras e anotações
-hatches = ['///', '\\\\', '|||', '---', 'xxx', 'ooo', '***', '+++']
+hatches = ['///', '....', 'xxxx', '--']
 
 def add_hatches_and_annotations(ax, values):
     for bar, hatch, value in zip(ax.patches, hatches, values):
-        bar.set_hatch(hatch)
+        bar.set_hatch(3 * hatch)
         bar.set_edgecolor('black')
         ax.text(
             bar.get_x() + bar.get_width() / 2.,
@@ -149,23 +149,20 @@ def plot_metrics_for_class(class_name, metrics_values, metrics_names, save_path=
     plt.savefig(os.path.join(save_path, f"metrics_for_{class_name}.png"))
 
 
-def plot_combined_metrics(calculated_metrics, original_class_names, metrics_names, save_path="graphics"):
+def plot_combined_metrics(calculated_metrics, class_names, metrics_names, save_path="graphics"):
     plt.figure(figsize=(14, 4.5))
-    colors = sns.color_palette("tab10", len(original_class_names))  # Pega uma paleta de cores para o número de ataques
 
     for idx, metric_name in enumerate(metrics_names):
         ax = plt.subplot(1, 4, idx + 1)
-        sns.barplot(x=metrics_names, y=calculated_metrics[idx], palette=colors, edgecolor='black', ax=ax)
+        values_for_metric = calculated_metrics[idx]
+        print('aq', len(class_names), len(values_for_metric))
+        sns.barplot(x=class_names, y=values_for_metric, color='white', edgecolor='black', ax=ax)
         ax.set_title(metric_name, fontsize=16)
-        add_hatches_and_annotations(ax, calculated_metrics[idx])
-
-        # Adicionar legenda apenas no último subplot para evitar repetição
-        if idx == len(metrics_names) - 1:
-            ax.legend(handles=[mpatches.Patch(color=colors[i], label=class_name) for i, class_name in
-                               enumerate(original_class_names)],
-                      loc='upper right')
+        add_hatches_and_annotations(ax, values_for_metric)
 
     if not os.path.exists(save_path):
         os.makedirs(save_path)
     plt.savefig(os.path.join(save_path, "combined_metrics.png"))
+
+
 
