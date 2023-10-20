@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
+from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder, OrdinalEncoder
 from sklearn.metrics import (accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score)
 import seaborn as sns
 from metrics import Metrics
@@ -42,44 +42,32 @@ def load_data():
     return X_train, y_train, X_test, y_test
 
 def preprocess_data(X_train, y_train, X_test, y_test):
-
-    # Tratar valores faltantes
-    for col in X_train.select_dtypes(include=[np.number]).columns.tolist():
-        median_value = X_train[col].median()
-        X_train[col].fillna(median_value, inplace=True)
-        X_test[col].fillna(median_value, inplace=True)
-
-    for col in X_train.select_dtypes(include=['object']).columns.tolist():
-        X_train[col].fillna("missing", inplace=True)
-        X_train[col] = X_train[col].astype(str)
-
-        X_test[col].fillna("missing", inplace=True)
-        X_test[col] = X_test[col].astype(str)
-
-    # Identificar colunas numéricas e categóricas
+    # Identificar colunas numéricas
     num_cols = X_train.select_dtypes(include=[np.number]).columns.tolist()
     cat_cols = X_train.select_dtypes(include=['object']).columns.tolist()
 
-    # Inicializar o OneHotEncoder e o ColumnTransformer
-    onehotencoder = OneHotEncoder(drop='first', handle_unknown='ignore')
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', StandardScaler(), num_cols),
-            ('cat', onehotencoder, cat_cols)],
-        remainder='passthrough')
+    # Utilizar StandardScaler para normalizar os dados numéricos
+    scaler = StandardScaler()
+    X_train[num_cols] = scaler.fit_transform(X_train[num_cols])
+    X_test[num_cols] = scaler.transform(X_test[num_cols])
 
-    # Aplicar a transformação nos datasets de treino e teste
-    X_train = preprocessor.fit_transform(X_train)
-    X_test = preprocessor.transform(X_test)
+    # Utilizar OneHotEncoder para colunas categóricas
+    if cat_cols:
+        encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+        X_train_cat = encoder.fit_transform(X_train[cat_cols])
+        X_test_cat = encoder.transform(X_test[cat_cols])
 
-    # Inicializar o LabelEncoder
+        X_train = np.hstack([X_train[num_cols], X_train_cat])
+        X_test = np.hstack([X_test[num_cols], X_test_cat])
+
+    # Inicializar o LabelEncoder para os rótulos
     le = LabelEncoder()
 
     # Transformar y_train e y_test para numérico
     if y_train.dtype == 'object':
         y_train = le.fit_transform(y_train)
     if y_test.dtype == 'object':
-        y_test = le.transform(y_test)
+        y_test = le.transform(y_test)  # usar o mesmo encoder para garantir uma codificação consistente
 
     return y_train, y_test, X_train, X_test, le
 
@@ -108,6 +96,7 @@ def print_metrics(metrics):
     print(f'False Positives: {metrics.FP}')
     print(f'True Negatives: {metrics.TN}')
     print(f'False Negatives: {metrics.FN}')
+    print(f'Total True and False Positives and Negatives: {metrics.TP + metrics.FP + metrics.FN + metrics.TN}')
     print(f'Accuracy (calculated): {metrics.calculated_accuracy}')
     print(f'Precision (calculated): {metrics.calculated_precision}')
     print(f'Recall (calculated): {metrics.calculated_recall}')
@@ -120,7 +109,7 @@ def save_metrics_to_json(metrics, filename="metrics.json"):
 
 
 # Função para adicionar hachuras e anotações
-hatches = ['///', '....', 'xxxx', '--']
+hatches = ['///', '....', 'xxxx', '--', 'ooo', '@@', '$$', '%%']
 
 def add_hatches_and_annotations(ax, values):
     for bar, hatch, value in zip(ax.patches, hatches, values):
